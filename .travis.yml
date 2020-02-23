@@ -1,0 +1,9 @@
+language: go
+go:
+  - 1.13.x
+script:
+  - go test -v ./...
+deploy:
+  provider: heroku
+  api_key: $HEROKU_KEY
+  app: http-requests-respons
