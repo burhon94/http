@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	host := "localhost"
+	host := "0.0.0.0"
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
 		port = "9999"
