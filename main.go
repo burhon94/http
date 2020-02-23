@@ -6,11 +6,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
 	"strings"
 )
 
 func main() {
-	addr := "0.0.0.0:9999"
+	host := "localhost"
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "9999"
+	}
+	addr := fmt.Sprintf("%s:%s", host, port)
 	log.Printf("start server on: %s", addr)
 	err := start(addr)
 	if err != nil {
