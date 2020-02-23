@@ -1,4 +1,4 @@
-module github.com/burhon94/http
+module http
 
 go 1.13
 
