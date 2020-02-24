@@ -106,8 +106,37 @@ func handleConn(conn net.Conn) {
 		return
 	}
 	method, request, protocol := requestParts[0], requestParts[1], requestParts[2]
-	if method == "GET" && request == "/" && protocol == "HTTP/1.1" {
-		index := `<!doctype html>
+
+	for {
+		b := request != "/"
+		b2 := request != "/html.html"
+		ic := request != "/favicon.ico"
+		b3 := request != "/text.txt"
+		b4 := request != "/images.html"
+		im := request != "/img/1.jpg"
+		b5 := request != "/task.pdf"
+		b6 := request != "/task.pdf?download"
+		if b && ic && b2 && b3 && b4 && im && b5 && b6 {
+			log.Printf("request: %s", request)
+			bytes, err := ioutil.ReadFile("./server/404.html")
+			if err != nil {
+				log.Printf("can't open 404.html: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 404\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("Content-type: text/html\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytes)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/" && protocol == "HTTP/1.1" {
+			index := `<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -124,152 +153,155 @@ func handleConn(conn net.Conn) {
 <a href="task.pdf">pdf</a><br>
 </body>
 </html>`
-		log.Printf("request: %s", request)
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(index)))
-		_, _ = writer.WriteString("Content-Type: text/html\r\n")
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.WriteString(index)
-		err := writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
+			log.Printf("request: %s", request)
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(index)))
+			_, _ = writer.WriteString("Content-Type: text/html\r\n")
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.WriteString(index)
+			err := writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
 		}
-		log.Printf("response on: %s", request)
+
+		if method == "GET" && request == "/favicon.ico" && protocol == "HTTP/1.1" {
+			bytes, err := ioutil.ReadFile("./server/img/icon.png")
+			if err != nil {
+				log.Printf("can't open file")
+			}
+			log.Printf("request: %s", request)
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("Content-Type: image/png\r\n")
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytes)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/html.html" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytes, err := ioutil.ReadFile("./server/html.html")
+			if err != nil {
+				log.Printf("can't load html.html: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("Content-Type: text/html\r\n")
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytes)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/text.txt" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytes, err := ioutil.ReadFile("./server/someText.txt")
+			if err != nil {
+				log.Printf("can't load someText.txt: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("Content-Type: text/plain\r\n")
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytes)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/images.html" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytes, err := ioutil.ReadFile("./server/images.html")
+			if err != nil {
+				log.Printf("can't load images.html: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("Content-type: text/html\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytes)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/img/1.jpg" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytesIMG, err := ioutil.ReadFile("./server/img/1.jpg")
+			if err != nil {
+				log.Printf("can't load 1.jpg: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesIMG)))
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("Content-type: media\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytesIMG)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/task.pdf" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
+			if err != nil {
+				log.Printf("can't load task.pdf: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("Content-type: application/pdf\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytesPDF)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		if method == "GET" && request == "/task.pdf?download" && protocol == "HTTP/1.1" {
+			log.Printf("request: %s", request)
+			bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
+			if err != nil {
+				log.Printf("can't load task.pdf: %v", err)
+			}
+			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
+			_, _ = writer.WriteString("Connection: Close\r\n")
+			_, _ = writer.WriteString("Content-type: application/download\r\n")
+			_, _ = writer.WriteString("\r\n")
+			_, _ = writer.Write(bytesPDF)
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("can't sent response: %v", err)
+			}
+			log.Printf("response on: %s", request)
+		}
+
+		return
+
 	}
 
-	if method == "GET" && request == "/favicon.ico" && protocol == "HTTP/1.1" {
-		bytes, err := ioutil.ReadFile("./server/img/icon.png")
-		if err != nil {
-			log.Printf("can't open file")
-		}
-		log.Printf("request: %s", request)
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-		_, _ = writer.WriteString("Content-Type: image/png\r\n")
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytes)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/html.html" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytes, err := ioutil.ReadFile("./server/html.html")
-		if err != nil {
-			log.Printf("can't load html.html: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-		_, _ = writer.WriteString("Content-Type: text/html\r\n")
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytes)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/text.txt" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytes, err := ioutil.ReadFile("./server/someText.txt")
-		if err != nil {
-			log.Printf("can't load someText.txt: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-		_, _ = writer.WriteString("Content-Type: text/plain\r\n")
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytes)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/images.html" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytes, err := ioutil.ReadFile("./server/images.html")
-		if err != nil {
-			log.Printf("can't load images.html: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("Content-type: text/html\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytes)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/img/1.jpg" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytesIMG, err := ioutil.ReadFile("./server/img/1.jpg")
-		if err != nil {
-			log.Printf("can't load 1.jpg: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesIMG)))
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("Content-type: media\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytesIMG)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/task.pdf" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
-		if err != nil {
-			log.Printf("can't load task.pdf: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("Content-type: application/pdf\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytesPDF)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	if method == "GET" && request == "/task.pdf?download" && protocol == "HTTP/1.1" {
-		log.Printf("request: %s", request)
-		bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
-		if err != nil {
-			log.Printf("can't load task.pdf: %v", err)
-		}
-		_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-		_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
-		_, _ = writer.WriteString("Connection: Close\r\n")
-		_, _ = writer.WriteString("Content-type: application/download\r\n")
-		_, _ = writer.WriteString("\r\n")
-		_, _ = writer.Write(bytesPDF)
-		err = writer.Flush()
-		if err != nil {
-			log.Printf("can't sent response: %v", err)
-		}
-		log.Printf("response on: %s", request)
-	}
-
-	return
 }
