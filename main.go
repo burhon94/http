@@ -117,18 +117,41 @@ func handleConn(conn net.Conn) {
 		b5 := request != "/task.pdf"
 		b6 := request != "/task.pdf?download"
 		if b && ic && b2 && b3 && b4 && im && b5 && b6 {
+
+			html404 := `<!doctype html>
+			<html lang="en">
+			<meta charset="UTF-8">
+			<meta name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+			<title>The page is not found</title>
+
+			<style type="text/css">
+				body,h1,h2{margin:0}h2,h3{padding:.5em}h1,h2,h3{text-align:center;color:#fff}body{background-color:#fff;color:#000;font-size:.9em;font-family:sans-serif,helvetica;padding:0}:link,:visited{color:#c00}a:hover{color:#f50}h1{padding:.6em 2em .4em;background-color:#294172;font-weight:400;font-size:1.75em;border-bottom:2px solid #000}h1 strong,h2{font-weight:700}h1 strong{font-size:1.5em}h2{background-color:#3C6EB4;font-size:1.1em;border-bottom:2px solid #294172}h3{background-color:red}hr{display:none}.content{padding:1em 5em}.alert{border:2px solid #000}img{border:2px solid #fff;padding:2px;margin:2px}a:hover img{border:2px solid #294172}
+			</style>
+			</head>
+
+			<body cz-shortcut-listen="true">
+			<h1><strong>HTTP 404</strong></h1>
+
+			<div class="content">
+
+			<h3>The page you are looking for is not found.</h3>
+
+			</div>
+
+
+			</body></html>`
+
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./server/404.html")
-			if err != nil {
-				log.Printf("can't open 404.html: %v", err)
-			}
-			_, _ = writer.WriteString("HTTP/1.1 404\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
+			_, _ = writer.WriteString("HTTP/1.1 404 Page Not Found\r\n")
+			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(html404)))
+			_, _ = writer.WriteString("Content-Type: text/html\r\n")
 			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: text/html\r\n")
 			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytes)
-			err = writer.Flush()
+			_, _ = writer.WriteString(html404)
+			err := writer.Flush()
 			if err != nil {
 				log.Printf("can't sent response: %v", err)
 			}

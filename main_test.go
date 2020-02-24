@@ -272,7 +272,7 @@ func Test_Server404(t *testing.T) {
 		t.Fatalf("can't read response from server: %v", err)
 	}
 	response := string(bytes)
-	if !strings.Contains(response, "") {
-		t.Fatalf("response just be nil: %s", response)
+	if !strings.Contains(response, "404 Page Not Found") {
+		t.Fatalf("response just 404 Page Not Found: %s", response)
 	}
 }
