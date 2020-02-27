@@ -1,1 +1,1 @@
-web: http
+web: cmd
