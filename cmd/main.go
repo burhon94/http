@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bufio"
@@ -17,14 +17,14 @@ func main() {
 		port = "9999"
 	}
 	addr := fmt.Sprintf("%s:%s", host, port)
-	log.Printf("start server on: %s", addr)
-	err := start(addr)
+	log.Printf("Start server on: %s", addr)
+	err := Start(addr)
 	if err != nil {
-		log.Fatalf("can't start server on: %s, error: %v", addr, err)
+		log.Fatalf("can't Start server on: %s, error: %v", addr, err)
 	}
 }
 
-func start(addr string) (err error) {
+func Start(addr string) (err error) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Printf("can't listen on: %s, error: %v", addr, err)
@@ -193,7 +193,7 @@ func handleConn(conn net.Conn) {
 		if method == "GET" && request == "/favicon.ico" && protocol == "HTTP/1.1" {
 			bytes, err := ioutil.ReadFile("./server/img/icon.png")
 			if err != nil {
-				log.Printf("can't open file")
+				log.Printf("can't open files")
 			}
 			log.Printf("request: %s", request)
 			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
@@ -211,7 +211,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/html.html" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./server/html.html")
+			bytes, err := ioutil.ReadFile("./files/html.html")
 			if err != nil {
 				log.Printf("can't load html.html: %v", err)
 			}
@@ -287,7 +287,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/task.pdf" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
+			bytesPDF, err := ioutil.ReadFile("./server/files/html.pdf")
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}
@@ -306,7 +306,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/task.pdf?download" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytesPDF, err := ioutil.ReadFile("./server/file/html.pdf")
+			bytesPDF, err := ioutil.ReadFile("./server/files/html.pdf")
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}

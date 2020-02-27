@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bufio"
@@ -13,10 +13,10 @@ import (
 func Test_ServerConnOK(t *testing.T) {
 	addr := "0.0.0.0:9988"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -35,10 +35,10 @@ func Test_ServerConnOK(t *testing.T) {
 func Test_ServerIndex(t *testing.T) {
 	addr := "0.0.0.0:9922"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -70,10 +70,10 @@ func Test_ServerIndex(t *testing.T) {
 func Test_ServerHTML(t *testing.T) {
 	addr := "0.0.0.0:9933"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -105,10 +105,10 @@ func Test_ServerHTML(t *testing.T) {
 func Test_ServerTEXT(t *testing.T) {
 	addr := "0.0.0.0:9977"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -140,10 +140,10 @@ func Test_ServerTEXT(t *testing.T) {
 func Test_ServerImageHTML(t *testing.T) {
 	addr := "0.0.0.0:8870"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -175,10 +175,10 @@ func Test_ServerImageHTML(t *testing.T) {
 func Test_ServerImages(t *testing.T) {
 	addr := "0.0.0.0:8892"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -210,10 +210,10 @@ func Test_ServerImages(t *testing.T) {
 func Test_ServerPDF(t *testing.T) {
 	addr := "0.0.0.0:8852"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
@@ -245,10 +245,10 @@ func Test_ServerPDF(t *testing.T) {
 func Test_Server404(t *testing.T) {
 	addr := "0.0.0.0:9966"
 	go func() {
-		log.Printf("start server")
-		err:= start(addr)
+		log.Printf("Start server")
+		err:= Start(addr)
 		if err != nil {
-			t.Fatalf("can't start server: %v", err)
+			t.Fatalf("can't Start server: %v", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
