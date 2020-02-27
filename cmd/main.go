@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -108,6 +109,8 @@ func handleConn(conn net.Conn) {
 	method, request, protocol := requestParts[0], requestParts[1], requestParts[2]
 
 	for {
+		var byteBuff = bytes.Buffer{}
+
 		b := request != "/"
 		b2 := request != "/html.html"
 		ic := request != "/favicon.ico"
@@ -141,19 +144,21 @@ func handleConn(conn net.Conn) {
 
 			</div>
 
-
 			</body></html>`
-
 			log.Printf("request: %s", request)
-			_, _ = writer.WriteString("HTTP/1.1 404 Page Not Found\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(html404)))
-			_, _ = writer.WriteString("Content-Type: text/html\r\n")
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.WriteString(html404)
-			err := writer.Flush()
+			_, _ = byteBuff.WriteString("HTTP/1.1 404 Page Not Found\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(html404)))
+			_, _ = byteBuff.WriteString("Content-Type: text/html\r\n")
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.WriteString(html404)
+			_, err := byteBuff.WriteTo(writer)
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error write from buffer to writer: %v", err)
+			}
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
@@ -177,91 +182,111 @@ func handleConn(conn net.Conn) {
 </body>
 </html>`
 			log.Printf("request: %s", request)
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(index)))
-			_, _ = writer.WriteString("Content-Type: text/html\r\n")
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.WriteString(index)
-			err := writer.Flush()
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(index)))
+			_, _ = byteBuff.WriteString("Content-Type: text/html\r\n")
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.WriteString(index)
+			_, err := byteBuff.WriteTo(writer)
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error write from buffer to writer: %v", err)
+			}
+			err = writer.Flush()
+			if err != nil {
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
 
 		if method == "GET" && request == "/favicon.ico" && protocol == "HTTP/1.1" {
-			bytes, err := ioutil.ReadFile("./files/img/icon.png")
+			bytesFile, err := ioutil.ReadFile("./files/img/icon.png")
 			if err != nil {
 				log.Printf("can't open files")
 			}
 			log.Printf("request: %s", request)
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-			_, _ = writer.WriteString("Content-Type: image/png\r\n")
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytes)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesFile)))
+			_, _ = byteBuff.WriteString("Content-Type: image/png\r\n")
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesFile)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
 
 		if method == "GET" && request == "/html.html" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./files/html.html")
+			bytesFile, err := ioutil.ReadFile("./files/html.html")
 			if err != nil {
 				log.Printf("can't load html.html: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-			_, _ = writer.WriteString("Content-Type: text/html\r\n")
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytes)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesFile)))
+			_, _ = byteBuff.WriteString("Content-Type: text/html\r\n")
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesFile)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
 
 		if method == "GET" && request == "/text.txt" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./files/someText.txt")
+			bytesFile, err := ioutil.ReadFile("./files/someText.txt")
 			if err != nil {
 				log.Printf("can't load someText.txt: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-			_, _ = writer.WriteString("Content-Type: text/plain\r\n")
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytes)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesFile)))
+			_, _ = byteBuff.WriteString("Content-Type: text/plain\r\n")
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesFile)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
 
 		if method == "GET" && request == "/images.html" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./files/images.html")
+			bytesFile, err := ioutil.ReadFile("./files/images.html")
 			if err != nil {
 				log.Printf("can't load images.html: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytes)))
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: text/html\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytes)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesFile)))
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("Content-type: text/html\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesFile)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
@@ -272,15 +297,19 @@ func handleConn(conn net.Conn) {
 			if err != nil {
 				log.Printf("can't load 1.jpg: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesIMG)))
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: media\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytesIMG)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesIMG)))
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("Content-type: media\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesIMG)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
@@ -291,15 +320,19 @@ func handleConn(conn net.Conn) {
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: application/pdf\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytesPDF)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("Content-type: application/pdf\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesPDF)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
@@ -310,15 +343,19 @@ func handleConn(conn net.Conn) {
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}
-			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
-			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
-			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: application/octet-stream\r\n")
-			_, _ = writer.WriteString("\r\n")
-			_, _ = writer.Write(bytesPDF)
+			_, _ = byteBuff.WriteString("HTTP/1.1 200 OK\r\n")
+			_, _ = byteBuff.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
+			_, _ = byteBuff.WriteString("Connection: Close\r\n")
+			_, _ = byteBuff.WriteString("Content-type: application/octet-stream\r\n")
+			_, _ = byteBuff.WriteString("\r\n")
+			_, _ = byteBuff.Write(bytesPDF)
+			_, err = byteBuff.WriteTo(writer)
+			if err != nil {
+				log.Printf("error write from buffer to writer: %v", err)
+			}
 			err = writer.Flush()
 			if err != nil {
-				log.Printf("can't sent response: %v", err)
+				log.Printf("error to response: %v", err)
 			}
 			log.Printf("response on: %s", request)
 		}
