@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"bufio"
@@ -14,7 +14,7 @@ func Test_ServerConnOK(t *testing.T) {
 	addr := "0.0.0.0:9988"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -36,7 +36,7 @@ func Test_ServerIndex(t *testing.T) {
 	addr := "0.0.0.0:9922"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -71,7 +71,7 @@ func Test_ServerHTML(t *testing.T) {
 	addr := "0.0.0.0:9933"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -106,7 +106,7 @@ func Test_ServerTEXT(t *testing.T) {
 	addr := "0.0.0.0:9977"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -141,7 +141,7 @@ func Test_ServerImageHTML(t *testing.T) {
 	addr := "0.0.0.0:8870"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -176,7 +176,7 @@ func Test_ServerImages(t *testing.T) {
 	addr := "0.0.0.0:8892"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -211,7 +211,7 @@ func Test_ServerPDF(t *testing.T) {
 	addr := "0.0.0.0:8852"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}
@@ -246,7 +246,7 @@ func Test_Server404(t *testing.T) {
 	addr := "0.0.0.0:9966"
 	go func() {
 		log.Printf("Start server")
-		err:= Start(addr)
+		err := Start(addr)
 		if err != nil {
 			t.Fatalf("can't Start server: %v", err)
 		}

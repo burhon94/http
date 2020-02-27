@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"bufio"
@@ -45,7 +45,7 @@ func Start(addr string) (err error) {
 			continue
 		}
 		log.Print("accept success")
-		handleConn(conn)
+		go handleConn(conn)
 	}
 }
 
@@ -191,7 +191,7 @@ func handleConn(conn net.Conn) {
 		}
 
 		if method == "GET" && request == "/favicon.ico" && protocol == "HTTP/1.1" {
-			bytes, err := ioutil.ReadFile("./server/img/icon.png")
+			bytes, err := ioutil.ReadFile("./files/img/icon.png")
 			if err != nil {
 				log.Printf("can't open files")
 			}
@@ -230,7 +230,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/text.txt" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./server/someText.txt")
+			bytes, err := ioutil.ReadFile("./files/someText.txt")
 			if err != nil {
 				log.Printf("can't load someText.txt: %v", err)
 			}
@@ -249,7 +249,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/images.html" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytes, err := ioutil.ReadFile("./server/images.html")
+			bytes, err := ioutil.ReadFile("./files/images.html")
 			if err != nil {
 				log.Printf("can't load images.html: %v", err)
 			}
@@ -268,7 +268,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/img/1.jpg" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytesIMG, err := ioutil.ReadFile("./server/img/1.jpg")
+			bytesIMG, err := ioutil.ReadFile("./files/img/1.jpg")
 			if err != nil {
 				log.Printf("can't load 1.jpg: %v", err)
 			}
@@ -287,7 +287,7 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/task.pdf" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytesPDF, err := ioutil.ReadFile("./server/files/html.pdf")
+			bytesPDF, err := ioutil.ReadFile("./files/html.pdf")
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}
@@ -306,14 +306,14 @@ func handleConn(conn net.Conn) {
 
 		if method == "GET" && request == "/task.pdf?download" && protocol == "HTTP/1.1" {
 			log.Printf("request: %s", request)
-			bytesPDF, err := ioutil.ReadFile("./server/files/html.pdf")
+			bytesPDF, err := ioutil.ReadFile("./files/html.pdf")
 			if err != nil {
 				log.Printf("can't load task.pdf: %v", err)
 			}
 			_, _ = writer.WriteString("HTTP/1.1 200 OK\r\n")
 			_, _ = writer.WriteString(fmt.Sprintf("Content-Length: %d\r\n", len(bytesPDF)))
 			_, _ = writer.WriteString("Connection: Close\r\n")
-			_, _ = writer.WriteString("Content-type: application/download\r\n")
+			_, _ = writer.WriteString("Content-type: application/octet-stream\r\n")
 			_, _ = writer.WriteString("\r\n")
 			_, _ = writer.Write(bytesPDF)
 			err = writer.Flush()
