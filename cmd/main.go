@@ -108,10 +108,7 @@ func handleConn(conn net.Conn) {
 		return
 	}
 	method, request, protocol := requestParts[0], requestParts[1], requestParts[2]
-
 	for {
-
-		patterns := []string{"/", "/html.html", "/favicon.ico", "/text.txt", "/images.html", "/1.jpg", "/task.pdf"}
 
 		if method != "GET" {
 			return
@@ -132,64 +129,34 @@ func handleConn(conn net.Conn) {
 			}
 			return
 		}
-
-		for _, pattern := range patterns {
-			if request == pattern {
-				switch request {
-				case "/":
-					err := sendFile(conn, "index.html", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "/html.html":
-					err := sendFile(conn, "html.html", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "favicon.ico":
-					err := sendFile(conn, "favicon.ico", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "/text.txt":
-					err := sendFile(conn, "text.txt", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "/images.html":
-					err := sendFile(conn, "images.html", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "/1.jpg":
-					err := sendFile(conn, "1.jpg", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				case "/task.pdf":
-					err := sendFile(conn, "task.pdf", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				default:
-					err := sendFile(conn, "html404.html", request)
-					if err != nil {
-						log.Printf("can't process the request: %v", err)
-					}
-				}
-				return
-
-			}/*else {
-				err := sendFile(conn, "html404.html", request)
+		if request == "/" {
+			err := sendFile(conn, "index.html", request)
+			if err != nil {
+				log.Printf("can't process the request: %v", err)
+			}
+			return
+		}
+		var fileName = request[:]
+		fileName = strings.TrimPrefix(fileName, "/")
+		serverFiles, err := ioutil.ReadDir(pkg.ServerFiles)
+		if err != nil {
+			log.Printf("can't check server files: %s, error %v", pkg.ServerFiles, err)
+		}
+		for _, serverFile := range serverFiles {
+			if fileName == serverFile.Name() {
+				err := sendFile(conn, fileName, request)
 				if err != nil {
 					log.Printf("can't process the request: %v", err)
 				}
-			}*/
+				return
+			}
+		}
+		err = sendFile(conn, "html404.html", request)
+		if err != nil {
+			log.Printf("can't process the request: %v", err)
 		}
 		return
-
 	}
-
 }
 
 func sendFile(conn net.Conn, fileName, request string) (err error) {
