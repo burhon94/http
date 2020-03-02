@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"io/ioutil"
 	"log"
 	"net"
-	"strings"
 	"testing"
 	"time"
 )
@@ -31,7 +28,7 @@ func Test_ServerConnOK(t *testing.T) {
 		}
 	}()
 }
-
+/*
 func Test_ServerIndex(t *testing.T) {
 	addr := "0.0.0.0:9922"
 	go func() {
@@ -276,3 +273,4 @@ func Test_Server404(t *testing.T) {
 		t.Logf("response just 404 Page Not Found: %s", response)
 	}
 }
+*/
